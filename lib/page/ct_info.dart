@@ -3,19 +3,19 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:online_homework_collector/widget/dialog.dart';
 import 'package:online_homework_collector/widget/homework_card.dart';
 
-import '../data/homework.dart';
+import '../data/collect_task.dart';
 import '../global_data.dart';
 import '../widget/toast.dart';
 
-class HomeworkInfoPage extends StatefulWidget {
+class CTaskInfoPage extends StatefulWidget {
 
-  const HomeworkInfoPage({super.key});
+  const CTaskInfoPage({super.key});
 
   @override
-  State<StatefulWidget> createState() => _HomeworkInfoPageState();
+  State<StatefulWidget> createState() => _CTaskInfoPageState();
 }
 
-class _HomeworkInfoPageState extends State<HomeworkInfoPage> {
+class _CTaskInfoPageState extends State<CTaskInfoPage> {
 
   late FToast fToast;
 
@@ -30,14 +30,18 @@ class _HomeworkInfoPageState extends State<HomeworkInfoPage> {
       }
       setState(() {
         //连续添加三十份作业信息到homeworks
-        homeworks.addAll(List.generate(1000, (index) => Homework(
-          title: '作业标题$index',
-          description: '作业描述$index',
-          dueDate: '2021-10-01',
-          isCollected: index % 2 == 0,
-        )));
+        collectTasks.addAll(List.generate(1000, (index) {
+          // 判断index除以 3 的余数，如果余数为 0 则返回作业类型为混合类型，如果余数为 1 则返回作业类型为图片，如果余数为 2 则返回作业类型为通知
+          CTaskType type = index % 3 == 0 ? CTaskType.mixedType : index % 3 == 1 ? CTaskType.photoOnly : CTaskType.notificationOnly;
+          return CTask(
+            title: '标题$index',
+            description: '描述$index',
+            dueDate: '2021-10-01',
+            type: type,
+            isCollected: index % 2 == 0,
+          );
+        }));
       });
-
     });
   }
 
@@ -49,27 +53,27 @@ class _HomeworkInfoPageState extends State<HomeworkInfoPage> {
         children: [
           // 标题组件
           const Text(
-            '当前作业信息',
+            '当前收集任务信息',
             style: TextStyle(
               fontSize: 18,
             ),
           ),
           const SizedBox(height: 16),
-          homeworks.isEmpty ? const CircularProgressIndicator() : Expanded(
+          collectTasks.isEmpty ? const CircularProgressIndicator() : Expanded(
             child: ListView.builder(
               physics: const BouncingScrollPhysics(),
-              itemCount: homeworks.length,
+              itemCount: collectTasks.length,
               itemBuilder: (context, index) {
-                var currentHw = homeworks[index];
+                var currentCT = collectTasks[index];
                 return Builder(builder: (BuildContext context) {
-                  return HomeworkCard(homework: currentHw, onTap: () {
-                    if (currentHw.isCollected) {
+                  return HomeworkCard(homework: currentCT, onTap: () {
+                    if (currentCT.isCollected) {
                       fToast.init(context);
-                      showToast(fToast, '你已经交过作业啦～', ToastType.info, place: ToastPlace.center);
+                      showToast(fToast, '你已经提交过啦～', ToastType.info, place: ToastPlace.center);
                       return;
                     }
                     // 跳转到作业详情页
-                    Navigator.pushNamed(context, '/submit', arguments: currentHw);
+                    Navigator.pushNamed(context, '/submit', arguments: currentCT);
                   });
                 });
               },

@@ -15,12 +15,20 @@ class FileInfoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // 计算文件大小，并根据文件大小选择合适的计量单位显示
+    String size;
+    if (file.size > 1024 * 1024) {
+      size = '${(file.size / (1024 * 1024)).toStringAsFixed(2)} MB';
+    } else if (file.size > 1024) {
+      size = '${(file.size / 1024).toStringAsFixed(2)} KB';
+    } else {
+      size = '${file.size} B';
+    }
     return Card(
       child: ListTile(
         leading: const Icon(Icons.file_copy),
         title: Text(file.name),
-        subtitle: Text(file.path??""), // 有可能为null
-        trailing: Text('${file.size}B'),
+        subtitle: Text(size),
         onTap: onTap,
         onLongPress: onLongPress,
       ),

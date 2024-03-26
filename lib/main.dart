@@ -1,7 +1,7 @@
 import 'dart:developer';
 
 import 'package:online_homework_collector/page/about.dart';
-import 'package:online_homework_collector/page/hw_info.dart';
+import 'package:online_homework_collector/page/ct_info.dart';
 import 'package:online_homework_collector/page/login.dart';
 import 'package:online_homework_collector/page/submit.dart';
 import 'package:online_homework_collector/util/network_io.dart';
@@ -28,8 +28,16 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: true,
+        pageTransitionsTheme: const PageTransitionsTheme(builders: {
+          TargetPlatform.android: CupertinoPageTransitionsBuilder(),
+          TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+          TargetPlatform.fuchsia: CustomPageTransitionBuilder(),
+          TargetPlatform.linux: ZoomPageTransitionsBuilder(),
+          TargetPlatform.macOS: ZoomPageTransitionsBuilder(),
+          TargetPlatform.windows: ZoomPageTransitionsBuilder(),
+        }),
       ),
-      home: const MyHomePage(title: '在线作业收集系统'),
+      home: const MyHomePage(title: '在线文件收集系统'),
       builder: FToastBuilder(),
       navigatorKey: navigatorKey,
       routes: {
@@ -54,6 +62,8 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   late Size _size;
   bool get _isWideScreen => _size.aspectRatio > 1.15;
   bool _isLogin = false;
+  bool _isAdmin = false;
+  bool _isManager = false;
 
   final PageStorageBucket bucket = PageStorageBucket();
 
@@ -132,7 +142,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Text(
-                          '在线作业收集系统',
+                          '在线文件收集系统',
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 24,
@@ -180,7 +190,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                         if (!_isWideScreen) {
                           Navigator.pop(context);
                         }
-                        homeworks.clear();
+                        collectTasks.clear();
                         showToast(FToast().init(context), "退出登录成功", ToastType.success);
                       },
                     ),
@@ -248,11 +258,37 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                 ),
               Expanded(
                 flex: 16,
-                child: _isLogin ? const HomeworkInfoPage() : LoginPage(size: _size, fToast: fToast),
+                child: _isLogin ? const CTaskInfoPage() : LoginPage(size: _size, fToast: fToast),
               ),
             ],
           ),
         ),
+    );
+  }
+}
+
+class CustomPageTransitionBuilder extends PageTransitionsBuilder {
+
+  const CustomPageTransitionBuilder();
+  @override
+  Widget buildTransitions<T>(
+      PageRoute<T> route,
+      BuildContext context,
+      Animation<double> animation,
+      Animation<double> secondaryAnimation,
+      Widget child,
+      ) {
+    var begin = const Offset(1.0, 0.0);
+    var end = Offset.zero;
+    var curve = Curves.ease;
+
+    var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+
+    var offsetAnimation = animation.drive(tween);
+
+    return SlideTransition(
+      position: offsetAnimation,
+      child: child,
     );
   }
 }

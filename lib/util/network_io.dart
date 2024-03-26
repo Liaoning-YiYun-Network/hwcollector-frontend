@@ -58,25 +58,25 @@ class DioFactory {
 
   /// 设置请求回调，支持onResponse和onError
   DioFactory setCallback(
-      void Function(Response, ResponseInterceptorHandler) onResponseCallback,
-      void Function(DioException, ErrorInterceptorHandler) onErrorCallback
+      void Function(Response, ResponseInterceptorHandler)? onResponseCallback,
+      void Function(DioException, ErrorInterceptorHandler)? onErrorCallback
       ) {
     _dio.interceptors.add(InterceptorsWrapper(
       onResponse: (response, handler) {
-        onResponseCallback(response, handler);
+        if (onResponseCallback != null) onResponseCallback(response, handler);
         return handler.next(response);
       },
       onError: (error, handler) {
-        onErrorCallback(error, handler);
+        if (onErrorCallback != null) onErrorCallback(error, handler);
         return handler.next(error);
       },
     ));
     return this;
   }
 
-  Future<void> request() async {
+  Future<Response> request() async {
     _options.receiveDataWhenStatusError = true;
-    await _dio.request(_url, data: _body, options: _options);
+    return await _dio.request(_url, data: _body, options: _options);
   }
 
 }

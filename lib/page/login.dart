@@ -19,7 +19,8 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
 
   final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _idController = TextEditingController();
+  final TextEditingController _pwdController = TextEditingController();
+  bool _isObscure = true;
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +37,7 @@ class _LoginPageState extends State<LoginPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const Text(
-                      '欢迎使用在线作业收集系统',
+                      '欢迎使用在线文件收集系统',
                       style: TextStyle(
                         fontSize: 18,
                       ),
@@ -46,37 +47,34 @@ class _LoginPageState extends State<LoginPage> {
                       controller: _nameController,
                       decoration: const InputDecoration(
                         border: OutlineInputBorder(),
-                        labelText: '姓名',
+                        labelText: '用户名',
                       ),
                     ),
                     const SizedBox(height: 16),
                     TextField(
-                      controller: _idController,
-                      decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: '学号',
+                      controller: _pwdController,
+                      obscureText: _isObscure, // 是否隐藏正在编辑的文本
+                      decoration: InputDecoration(
+                        border: const OutlineInputBorder(),
+                        labelText: '密码',
+                        suffixIcon: IconButton( // 新增按钮
+                          icon: Icon(_isObscure ? Icons.visibility : Icons.visibility_off),
+                          onPressed: () {
+                            setState(() {
+                              _isObscure = !_isObscure; // 切换密码的可见性
+                            });
+                          },
+                        ),
                       ),
                     ),
                     const SizedBox(height: 32),
                     ElevatedButton(
                       onPressed: () {
                         var name = _nameController.text;
-                        var id = _idController.text;
+                        var id = _pwdController.text;
                         if (name.isEmpty || id.isEmpty) {
-                          showToast(widget.fToast, "姓名或学号不能为空", ToastType.warning);
+                          showToast(widget.fToast, "用户名或密码不能为空", ToastType.warning);
                         } else {
-                          // 判断姓名是否为2-3个汉字
-                          RegExp nameRegExp = RegExp(r'^[\u4e00-\u9fa5]{2,3}$');
-                          if (!nameRegExp.hasMatch(name)) {
-                            showToast(widget.fToast, "姓名应为两到三个汉字！", ToastType.warning);
-                            return;
-                          }
-                          // 判断学号是否为10位数字
-                          RegExp idRegExp = RegExp(r'^\d{10}$');
-                          if (!idRegExp.hasMatch(id)) {
-                            showToast(widget.fToast, "学号格式不正确！", ToastType.warning);
-                            return;
-                          }
                           // 创建一个新的 FocusNode 实例
                           FocusNode newFocus = FocusNode();
                           // 使编辑框失去焦点

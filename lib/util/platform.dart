@@ -1,6 +1,5 @@
 import 'dart:io' show Platform;
 
-import 'package:flutter/foundation.dart';
 
 PlatformType _checkPlatform() {
   if (Platform.isAndroid) {

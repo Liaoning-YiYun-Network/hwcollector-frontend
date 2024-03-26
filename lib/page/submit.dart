@@ -4,7 +4,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:online_homework_collector/main.dart';
 import 'package:online_homework_collector/widget/file_card.dart';
 
-import '../data/homework.dart';
+import '../data/collect_task.dart';
 import '../util/network_io.dart';
 import '../widget/dialog.dart';
 import '../widget/toast.dart';
@@ -46,7 +46,7 @@ class _SubmitPageState extends State<SubmitPage> {
         ),
       );
     }
-    var homework = arg as Homework;
+    var cTask = arg as CTask;
     return Scaffold(
       appBar: AppBar(
           centerTitle: true,
@@ -61,7 +61,7 @@ class _SubmitPageState extends State<SubmitPage> {
                   context: context,
                   builder: (context) {
                     return AlertDialog(
-                      title: const Text('确认放弃提交作业？'),
+                      title: const Text('确认放弃提交？'),
                       content: const Text('你的文件选择记录将不会被保存'),
                       actions: [
                         TextButton(
@@ -80,7 +80,12 @@ class _SubmitPageState extends State<SubmitPage> {
                               dispose();
                             });
                           },
-                          child: const Text('确认'),
+                          child: const Text(
+                            '确认',
+                            style: TextStyle(
+                              color: Colors.red,
+                            )
+                          ),
                         ),
                       ],
                     );
@@ -98,7 +103,7 @@ class _SubmitPageState extends State<SubmitPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              homework.title,
+              cTask.title,
               style: const TextStyle(
                 fontSize: 24,
               ),
@@ -106,7 +111,7 @@ class _SubmitPageState extends State<SubmitPage> {
             const SizedBox(height: 16),
             // 作业描述
             Text(
-              homework.description,
+              cTask.description,
               style: const TextStyle(
                 fontSize: 18,
               ),
@@ -114,7 +119,7 @@ class _SubmitPageState extends State<SubmitPage> {
             const SizedBox(height: 16),
             // 作业截止日期
             Text(
-              '截止时间：${homework.dueDate}',
+              '截止时间：${cTask.dueDate}',
               style: const TextStyle(
                 fontSize: 18,
               ),
@@ -126,7 +131,7 @@ class _SubmitPageState extends State<SubmitPage> {
                 itemCount: files.length,
                 itemBuilder: (context, index) {
                   return FileInfoCard(file: files[index],
-                      onTap: () {
+                      onLongPress: () {
                         // 弹出一个确认窗口，提示用户是否确认删除文件
                         showDialog(
                           context: context,
@@ -149,7 +154,12 @@ class _SubmitPageState extends State<SubmitPage> {
                                       files.removeAt(index);
                                     });
                                   },
-                                  child: const Text('确认'),
+                                  child: const Text(
+                                    '确认',
+                                    style: TextStyle(
+                                      color: Colors.red,
+                                    ),
+                                  ),
                                 ),
                               ],
                             );

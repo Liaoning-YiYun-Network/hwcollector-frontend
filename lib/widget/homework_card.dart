@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-import '../data/homework.dart';
+import '../data/collect_task.dart';
 
 class HomeworkCard extends StatelessWidget {
-  final Homework homework;
+  final CTask homework;
   final Function()? onTap;
 
   const HomeworkCard({super.key, required this.homework, this.onTap});
